@@ -37,24 +37,22 @@ type InternalProps = {|
 export class FeaturedAddonReviewBase extends React.Component<InternalProps> {
   constructor(props: InternalProps) {
     super(props);
+
     this.loadDataIfNeeded();
   }
 
-  componentWillReceiveProps(nextProps: InternalProps) {
-    this.loadDataIfNeeded(nextProps);
+  componentDidUpdate(prevProps: InternalProps) {
+    this.loadDataIfNeeded(prevProps);
   }
 
-  loadDataIfNeeded(nextProps?: InternalProps) {
+  loadDataIfNeeded(prevProps?: InternalProps) {
     const {
       dispatch,
       errorHandler,
       featuredReview,
       loadingReview,
       reviewId,
-    } = {
-      ...this.props,
-      ...nextProps,
-    };
+    } = this.props;
 
     if (errorHandler.hasError()) {
       log.warn('Not loading data because of an error');
@@ -62,8 +60,7 @@ export class FeaturedAddonReviewBase extends React.Component<InternalProps> {
     }
 
     if (
-      (!featuredReview ||
-        (nextProps && this.props.reviewId !== nextProps.reviewId)) &&
+      (!featuredReview || (prevProps && prevProps.reviewId !== reviewId)) &&
       !loadingReview
     ) {
       dispatch(fetchReview({ reviewId, errorHandlerId: errorHandler.id }));
